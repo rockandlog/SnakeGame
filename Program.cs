@@ -6,45 +6,22 @@ class Program
     static int width = 40;
     static int height = 20;
     static bool gameRunning = true;
+    static bool multiplayer = false;
 
-    static ConsoleKey currentDirection = ConsoleKey.RightArrow;
+    static ConsoleKey currentDirection1 = ConsoleKey.RightArrow;
+    static ConsoleKey currentDirection2 = ConsoleKey.D;
+
     static Thread inputThread;
 
- feature/menu
-    static int snakeX;
-    static int snakeY;
+    static int snake1X, snake1Y;
+    static int snake2X, snake2Y;
 
-
-    static int snakeX = width / 2;
-    static int snakeY = height / 2;
-
- feature/collision
-
- feature/score
- main
- main
-    static int foodX;
-    static int foodY;
-
-    static int score = 0;
+    static int foodX, foodY;
+    static int score1 = 0;
+    static int score2 = 0;
 
     static Random rand = new Random();
 
- feature/menu
-
- feature/collision
-
-
- feature/food
-    static int foodX;
-    static int foodY;
-
-    static Random rand = new Random();
-
- main
- main
- main
- main
     static void Main()
     {
         while (true)
@@ -55,7 +32,8 @@ class Program
 
             Console.Clear();
             Console.WriteLine("Game Over!");
-            Console.WriteLine("Twój wynik: " + score);
+            Console.WriteLine($"Wynik Gracza 1: {score1}");
+            if (multiplayer) Console.WriteLine($"Wynik Gracza 2: {score2}");
             Console.WriteLine("Czy chcesz zagrać ponownie? (T/N)");
 
             var key = Console.ReadKey(true).Key;
@@ -68,26 +46,38 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("=== SNAKE ===");
-        Console.WriteLine("1. Start");
-        Console.WriteLine("2. Wyjście");
+        Console.WriteLine("1. Gra jednoosobowa");
+        Console.WriteLine("2. Gra dwuosobowa");
+        Console.WriteLine("3. Wyjście");
 
         ConsoleKey choice;
         do
         {
             choice = Console.ReadKey(true).Key;
-        } while (choice != ConsoleKey.D1 && choice != ConsoleKey.D2);
+        } while (choice != ConsoleKey.D1 && choice != ConsoleKey.D2 && choice != ConsoleKey.D3);
 
-        if (choice == ConsoleKey.D2)
+        if (choice == ConsoleKey.D1)
+            multiplayer = false;
+        else if (choice == ConsoleKey.D2)
+            multiplayer = true;
+        else
             Environment.Exit(0);
     }
 
     static void StartGame()
     {
         gameRunning = true;
-        snakeX = width / 2;
-        snakeY = height / 2;
-        score = 0;
-        currentDirection = ConsoleKey.RightArrow;
+
+        snake1X = width / 3;
+        snake1Y = height / 2;
+        snake2X = 2 * width / 3;
+        snake2Y = height / 2;
+
+        score1 = 0;
+        score2 = 0;
+
+        currentDirection1 = ConsoleKey.RightArrow;
+        currentDirection2 = ConsoleKey.D;
 
         Console.CursorVisible = false;
         Console.SetWindowSize(width, height);
@@ -104,43 +94,17 @@ class Program
             Thread.Sleep(100);
         }
 
- feature/menu
         inputThread.Join();
-
-        Console.Clear();
-        Console.WriteLine("Game Over!");
-        Console.WriteLine("Twój wynik: " + score);
- main
     }
 
     static void InitializeGame()
     {
         Console.Clear();
         DrawBorder();
- feature/menu
         SpawnFood();
-        DrawSnake();
+        DrawSnake1();
+        if (multiplayer) DrawSnake2();
         DrawScore();
-
- feature/collision
-        SpawnFood();
-        DrawSnake();
-        DrawScore();
-
- feature/score
-        SpawnFood();
-        DrawSnake();
-        DrawScore();
-
- feature/food
-        SpawnFood();
-        DrawSnake();
-
-        DrawSnake(); // Rysujemy węża na starcie
- main
- main
- main
- main
     }
 
     static void DrawBorder()
@@ -164,28 +128,24 @@ class Program
         }
     }
 
-    static void DrawSnake()
+    static void DrawSnake1()
     {
-        Console.SetCursorPosition(snakeX, snakeY);
+        Console.SetCursorPosition(snake1X, snake1Y);
         Console.Write("O");
     }
 
-    static void ClearSnake()
+    static void DrawSnake2()
     {
-        Console.SetCursorPosition(snakeX, snakeY);
+        Console.SetCursorPosition(snake2X, snake2Y);
+        Console.Write("X");
+    }
+
+    static void ClearSnake(int x, int y)
+    {
+        Console.SetCursorPosition(x, y);
         Console.Write(" ");
     }
 
- feature/menu
-
- feature/collision
-
- feature/score
-
- feature/food
- main
- main
- main
     static void DrawFood()
     {
         Console.SetCursorPosition(foodX, foodY);
@@ -199,31 +159,15 @@ class Program
         DrawFood();
     }
 
- feature/menu
-
- feature/collision
-    static void DrawScore()
-    {
-        Console.SetCursorPosition(2, 0); // przeniesione na górę ekranu
-        Console.Write("Wynik: " + score + "   ");
-    }
-
-
- feature/score
- main
     static void DrawScore()
     {
         Console.SetCursorPosition(2, 0);
-        Console.Write("Wynik: " + score + "   ");
+        if (multiplayer)
+            Console.Write($"P1: {score1}  P2: {score2}   ");
+        else
+            Console.Write($"Wynik: {score1}   ");
     }
 
- feature/menu
-
-
- main
- main
- main
- main
     static void ReadInput()
     {
         while (gameRunning)
@@ -232,12 +176,25 @@ class Program
             {
                 var key = Console.ReadKey(true).Key;
 
-                if ((key == ConsoleKey.UpArrow && currentDirection != ConsoleKey.DownArrow) ||
-                    (key == ConsoleKey.DownArrow && currentDirection != ConsoleKey.UpArrow) ||
-                    (key == ConsoleKey.LeftArrow && currentDirection != ConsoleKey.RightArrow) ||
-                    (key == ConsoleKey.RightArrow && currentDirection != ConsoleKey.LeftArrow))
+                // Gracz 1 – strzałki
+                if ((key == ConsoleKey.UpArrow && currentDirection1 != ConsoleKey.DownArrow) ||
+                    (key == ConsoleKey.DownArrow && currentDirection1 != ConsoleKey.UpArrow) ||
+                    (key == ConsoleKey.LeftArrow && currentDirection1 != ConsoleKey.RightArrow) ||
+                    (key == ConsoleKey.RightArrow && currentDirection1 != ConsoleKey.LeftArrow))
                 {
-                    currentDirection = key;
+                    currentDirection1 = key;
+                }
+
+                // Gracz 2 – WASD
+                if (multiplayer)
+                {
+                    if ((key == ConsoleKey.W && currentDirection2 != ConsoleKey.S) ||
+                        (key == ConsoleKey.S && currentDirection2 != ConsoleKey.W) ||
+                        (key == ConsoleKey.A && currentDirection2 != ConsoleKey.D) ||
+                        (key == ConsoleKey.D && currentDirection2 != ConsoleKey.A))
+                    {
+                        currentDirection2 = key;
+                    }
                 }
             }
 
@@ -247,65 +204,58 @@ class Program
 
     static void Update()
     {
-        ClearSnake();
+        ClearSnake(snake1X, snake1Y);
+        if (multiplayer) ClearSnake(snake2X, snake2Y);
 
-        switch (currentDirection)
+        // Ruch gracza 1
+        switch (currentDirection1)
         {
-            case ConsoleKey.UpArrow:
-                snakeY--;
-                break;
-            case ConsoleKey.DownArrow:
-                snakeY++;
-                break;
-            case ConsoleKey.LeftArrow:
-                snakeX--;
-                break;
-            case ConsoleKey.RightArrow:
-                snakeX++;
-                break;
+            case ConsoleKey.UpArrow: snake1Y--; break;
+            case ConsoleKey.DownArrow: snake1Y++; break;
+            case ConsoleKey.LeftArrow: snake1X--; break;
+            case ConsoleKey.RightArrow: snake1X++; break;
         }
 
- feature/menu
-
- feature/collision
-        
- main
-        if (snakeX <= 0 || snakeX >= width - 1 || snakeY <= 0 || snakeY >= height - 1)
+        // Kolizja gracza 1
+        if (snake1X <= 0 || snake1X >= width - 1 || snake1Y <= 0 || snake1Y >= height - 1)
         {
             gameRunning = false;
             return;
         }
 
- feature/menu
-
-        
-
- feature/score
-        // Sprawdzenie, czy zjedzono jedzenie
- main
- main
-        if (snakeX == foodX && snakeY == foodY)
+        // Gracz 2 (jeśli aktywny)
+        if (multiplayer)
         {
-            score++;
+            switch (currentDirection2)
+            {
+                case ConsoleKey.W: snake2Y--; break;
+                case ConsoleKey.S: snake2Y++; break;
+                case ConsoleKey.A: snake2X--; break;
+                case ConsoleKey.D: snake2X++; break;
+            }
+
+            if (snake2X <= 0 || snake2X >= width - 1 || snake2Y <= 0 || snake2Y >= height - 1)
+            {
+                gameRunning = false;
+                return;
+            }
+        }
+
+        // Zjedzenie jedzenia
+        if (snake1X == foodX && snake1Y == foodY)
+        {
+            score1++;
+            SpawnFood();
+            DrawScore();
+        }
+        else if (multiplayer && snake2X == foodX && snake2Y == foodY)
+        {
+            score2++;
             SpawnFood();
             DrawScore();
         }
 
- feature/menu
-
- feature/collision
-
- feature/food
-        // Sprawdzenie, czy wąż zjadł jedzenie
-        if (snakeX == foodX && snakeY == foodY)
-        {
-            SpawnFood(); 
-        }
-
- main
- main
- main
- main
-        DrawSnake();
+        DrawSnake1();
+        if (multiplayer) DrawSnake2();
     }
 }
