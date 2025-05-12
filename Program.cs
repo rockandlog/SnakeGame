@@ -13,6 +13,7 @@ class Program
     static int snakeX = width / 2;
     static int snakeY = height / 2;
 
+ feature/score
     static int foodX;
     static int foodY;
 
@@ -20,6 +21,15 @@ class Program
 
     static Random rand = new Random();
 
+
+ feature/food
+    static int foodX;
+    static int foodY;
+
+    static Random rand = new Random();
+
+ main
+ main
     static void Main()
     {
         Console.CursorVisible = false;
@@ -46,9 +56,18 @@ class Program
     {
         Console.Clear();
         DrawBorder();
+ feature/score
         SpawnFood();
         DrawSnake();
         DrawScore();
+
+ feature/food
+        SpawnFood();
+        DrawSnake();
+
+        DrawSnake(); // Rysujemy węża na starcie
+ main
+ main
     }
 
     static void DrawBorder()
@@ -84,6 +103,10 @@ class Program
         Console.Write(" ");
     }
 
+ feature/score
+
+ feature/food
+ main
     static void DrawFood()
     {
         Console.SetCursorPosition(foodX, foodY);
@@ -97,12 +120,16 @@ class Program
         DrawFood();
     }
 
+ feature/score
     static void DrawScore()
     {
         Console.SetCursorPosition(2, 0);
         Console.Write("Wynik: " + score + "   ");
     }
 
+
+ main
+ main
     static void ReadInput()
     {
         while (gameRunning)
@@ -144,6 +171,7 @@ class Program
                 break;
         }
 
+ feature/score
         // Sprawdzenie, czy zjedzono jedzenie
         if (snakeX == foodX && snakeY == foodY)
         {
@@ -152,6 +180,15 @@ class Program
             DrawScore();
         }
 
+ feature/food
+        // Sprawdzenie, czy wąż zjadł jedzenie
+        if (snakeX == foodX && snakeY == foodY)
+        {
+            SpawnFood(); 
+        }
+
+ main
+ main
         DrawSnake();
     }
 }
