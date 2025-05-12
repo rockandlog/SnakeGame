@@ -13,6 +13,10 @@ class Program
     static int snakeX = width / 2;
     static int snakeY = height / 2;
 
+ feature/collision
+
+ feature/score
+ main
     static int foodX;
     static int foodY;
 
@@ -20,6 +24,18 @@ class Program
 
     static Random rand = new Random();
 
+ feature/collision
+
+
+ feature/food
+    static int foodX;
+    static int foodY;
+
+    static Random rand = new Random();
+
+ main
+ main
+ main
     static void Main()
     {
         Console.CursorVisible = false;
@@ -46,9 +62,24 @@ class Program
     {
         Console.Clear();
         DrawBorder();
+ feature/collision
         SpawnFood();
         DrawSnake();
         DrawScore();
+
+ feature/score
+        SpawnFood();
+        DrawSnake();
+        DrawScore();
+
+ feature/food
+        SpawnFood();
+        DrawSnake();
+
+        DrawSnake(); // Rysujemy węża na starcie
+ main
+ main
+ main
     }
 
     static void DrawBorder()
@@ -84,6 +115,13 @@ class Program
         Console.Write(" ");
     }
 
+ feature/collision
+
+ feature/score
+
+ feature/food
+ main
+ main
     static void DrawFood()
     {
         Console.SetCursorPosition(foodX, foodY);
@@ -97,12 +135,25 @@ class Program
         DrawFood();
     }
 
+ feature/collision
     static void DrawScore()
     {
         Console.SetCursorPosition(2, 0); // przeniesione na górę ekranu
         Console.Write("Wynik: " + score + "   ");
     }
 
+
+ feature/score
+    static void DrawScore()
+    {
+        Console.SetCursorPosition(2, 0);
+        Console.Write("Wynik: " + score + "   ");
+    }
+
+
+ main
+ main
+ main
     static void ReadInput()
     {
         while (gameRunning)
@@ -144,14 +195,19 @@ class Program
                 break;
         }
 
-        // 💥 Kolizja ze ścianą
+ feature/collision
+        
         if (snakeX <= 0 || snakeX >= width - 1 || snakeY <= 0 || snakeY >= height - 1)
         {
             gameRunning = false;
             return;
         }
 
-        // 🍏 Zjedzenie jedzenia
+        
+
+ feature/score
+        // Sprawdzenie, czy zjedzono jedzenie
+ main
         if (snakeX == foodX && snakeY == foodY)
         {
             score++;
@@ -159,6 +215,18 @@ class Program
             DrawScore();
         }
 
+ feature/collision
+
+ feature/food
+        // Sprawdzenie, czy wąż zjadł jedzenie
+        if (snakeX == foodX && snakeY == foodY)
+        {
+            SpawnFood(); 
+        }
+
+ main
+ main
+ main
         DrawSnake();
     }
 }
