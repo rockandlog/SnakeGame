@@ -20,6 +20,7 @@ class Program
     static int score1 = 0;
     static int score2 = 0;
 
+    static int speed = 120; // ← NOWOŚĆ: prędkość gry (ms)
     static Random rand = new Random();
 
     static void Main()
@@ -63,6 +64,7 @@ class Program
     static void StartGame()
     {
         gameRunning = true;
+        speed = 120; // ← reset prędkości
 
         snake1X = width / 3;
         snake1Y = height / 2;
@@ -87,7 +89,7 @@ class Program
         while (gameRunning)
         {
             Update();
-            Thread.Sleep(multiplayer ? 120 : 100);
+            Thread.Sleep(speed); // ← teraz zależne od prędkości
         }
 
         inputThread.Join();
@@ -176,7 +178,6 @@ class Program
             {
                 var key = Console.ReadKey(true).Key;
 
-                // Gracz 1 – strzałki
                 if ((key == ConsoleKey.UpArrow && currentDirection1 != ConsoleKey.DownArrow) ||
                     (key == ConsoleKey.DownArrow && currentDirection1 != ConsoleKey.UpArrow) ||
                     (key == ConsoleKey.LeftArrow && currentDirection1 != ConsoleKey.RightArrow) ||
@@ -185,7 +186,6 @@ class Program
                     currentDirection1 = key;
                 }
 
-                // Gracz 2 – WASD
                 if (multiplayer)
                 {
                     if ((key == ConsoleKey.W && currentDirection2 != ConsoleKey.S) ||
@@ -207,7 +207,6 @@ class Program
         ClearSnake(snake1X, snake1Y);
         if (multiplayer) ClearSnake(snake2X, snake2Y);
 
-        // Ruch gracza 1
         switch (currentDirection1)
         {
             case ConsoleKey.UpArrow: snake1Y--; break;
@@ -216,14 +215,12 @@ class Program
             case ConsoleKey.RightArrow: snake1X++; break;
         }
 
-        // Kolizja gracza 1 ze ścianą
         if (snake1X <= 0 || snake1X >= width - 1 || snake1Y <= 0 || snake1Y >= height - 1)
         {
             gameRunning = false;
             return;
         }
 
-        // Ruch i kolizja gracza 2
         if (multiplayer)
         {
             switch (currentDirection2)
@@ -240,7 +237,6 @@ class Program
                 return;
             }
 
-            // Kolizja między graczami (głowa w głowę)
             if (snake1X == snake2X && snake1Y == snake2Y)
             {
                 gameRunning = false;
@@ -248,18 +244,19 @@ class Program
             }
         }
 
-        // Zjedzenie jedzenia
         if (snake1X == foodX && snake1Y == foodY)
         {
             score1++;
             SpawnFood();
             DrawScore();
+            if (speed > 40) speed -= 5;
         }
         else if (multiplayer && snake2X == foodX && snake2Y == foodY)
         {
             score2++;
             SpawnFood();
             DrawScore();
+            if (speed > 40) speed -= 5;
         }
 
         DrawSnake1();
