@@ -10,6 +10,9 @@ class Program
     static ConsoleKey currentDirection = ConsoleKey.RightArrow;
     static Thread inputThread;
 
+    static int snakeX = width / 2;
+    static int snakeY = height / 2;
+
     static void Main()
     {
         Console.CursorVisible = false;
@@ -35,6 +38,7 @@ class Program
     {
         Console.Clear();
         DrawBorder();
+        DrawSnake(); // Rysujemy węża na starcie
     }
 
     static void DrawBorder()
@@ -58,6 +62,18 @@ class Program
         }
     }
 
+    static void DrawSnake()
+    {
+        Console.SetCursorPosition(snakeX, snakeY);
+        Console.Write("O");
+    }
+
+    static void ClearSnake()
+    {
+        Console.SetCursorPosition(snakeX, snakeY);
+        Console.Write(" ");
+    }
+
     static void ReadInput()
     {
         while (gameRunning)
@@ -66,7 +82,6 @@ class Program
             {
                 var key = Console.ReadKey(true).Key;
 
-                // Blokujemy możliwość cofania się
                 if ((key == ConsoleKey.UpArrow && currentDirection != ConsoleKey.DownArrow) ||
                     (key == ConsoleKey.DownArrow && currentDirection != ConsoleKey.UpArrow) ||
                     (key == ConsoleKey.LeftArrow && currentDirection != ConsoleKey.RightArrow) ||
@@ -82,6 +97,24 @@ class Program
 
     static void Update()
     {
-        // Na razie nic – tu będzie logika ruchu węża w przyszłości
+        ClearSnake();
+
+        switch (currentDirection)
+        {
+            case ConsoleKey.UpArrow:
+                snakeY--;
+                break;
+            case ConsoleKey.DownArrow:
+                snakeY++;
+                break;
+            case ConsoleKey.LeftArrow:
+                snakeX--;
+                break;
+            case ConsoleKey.RightArrow:
+                snakeX++;
+                break;
+        }
+
+        DrawSnake();
     }
 }
