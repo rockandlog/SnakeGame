@@ -7,6 +7,9 @@ class Program
     static int height = 20;
     static bool gameRunning = true;
 
+    static ConsoleKey currentDirection = ConsoleKey.RightArrow;
+    static Thread inputThread;
+
     static void Main()
     {
         Console.CursorVisible = false;
@@ -14,6 +17,9 @@ class Program
         Console.SetBufferSize(width, height);
 
         InitializeGame();
+
+        inputThread = new Thread(ReadInput);
+        inputThread.Start();
 
         while (gameRunning)
         {
@@ -52,9 +58,30 @@ class Program
         }
     }
 
+    static void ReadInput()
+    {
+        while (gameRunning)
+        {
+            if (Console.KeyAvailable)
+            {
+                var key = Console.ReadKey(true).Key;
+
+                // Blokujemy możliwość cofania się
+                if ((key == ConsoleKey.UpArrow && currentDirection != ConsoleKey.DownArrow) ||
+                    (key == ConsoleKey.DownArrow && currentDirection != ConsoleKey.UpArrow) ||
+                    (key == ConsoleKey.LeftArrow && currentDirection != ConsoleKey.RightArrow) ||
+                    (key == ConsoleKey.RightArrow && currentDirection != ConsoleKey.LeftArrow))
+                {
+                    currentDirection = key;
+                }
+            }
+
+            Thread.Sleep(10);
+        }
+    }
+
     static void Update()
     {
-        // Na razie nic – tu będą działania gracza w przyszłości
-        // (np. poruszanie wężem, rysowanie, kolizje)
+        // Na razie nic – tu będzie logika ruchu węża w przyszłości
     }
 }
