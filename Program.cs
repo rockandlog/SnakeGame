@@ -13,13 +13,18 @@ class Program
     static int snakeX = width / 2;
     static int snakeY = height / 2;
 
+ feature/collision
+
  feature/score
+ main
     static int foodX;
     static int foodY;
 
     static int score = 0;
 
     static Random rand = new Random();
+
+ feature/collision
 
 
  feature/food
@@ -28,6 +33,7 @@ class Program
 
     static Random rand = new Random();
 
+ main
  main
  main
     static void Main()
@@ -56,6 +62,11 @@ class Program
     {
         Console.Clear();
         DrawBorder();
+ feature/collision
+        SpawnFood();
+        DrawSnake();
+        DrawScore();
+
  feature/score
         SpawnFood();
         DrawSnake();
@@ -66,6 +77,7 @@ class Program
         DrawSnake();
 
         DrawSnake(); // Rysujemy węża na starcie
+ main
  main
  main
     }
@@ -103,9 +115,12 @@ class Program
         Console.Write(" ");
     }
 
+ feature/collision
+
  feature/score
 
  feature/food
+ main
  main
     static void DrawFood()
     {
@@ -120,6 +135,14 @@ class Program
         DrawFood();
     }
 
+ feature/collision
+    static void DrawScore()
+    {
+        Console.SetCursorPosition(2, 0); // przeniesione na górę ekranu
+        Console.Write("Wynik: " + score + "   ");
+    }
+
+
  feature/score
     static void DrawScore()
     {
@@ -128,6 +151,7 @@ class Program
     }
 
 
+ main
  main
  main
     static void ReadInput()
@@ -171,14 +195,27 @@ class Program
                 break;
         }
 
+ feature/collision
+        
+        if (snakeX <= 0 || snakeX >= width - 1 || snakeY <= 0 || snakeY >= height - 1)
+        {
+            gameRunning = false;
+            return;
+        }
+
+        
+
  feature/score
         // Sprawdzenie, czy zjedzono jedzenie
+ main
         if (snakeX == foodX && snakeY == foodY)
         {
             score++;
             SpawnFood();
             DrawScore();
         }
+
+ feature/collision
 
  feature/food
         // Sprawdzenie, czy wąż zjadł jedzenie
@@ -187,6 +224,7 @@ class Program
             SpawnFood(); 
         }
 
+ main
  main
  main
         DrawSnake();
