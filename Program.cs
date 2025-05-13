@@ -57,8 +57,17 @@ class Program
             choice = Console.ReadKey(true).Key;
         } while (choice != ConsoleKey.D1 && choice != ConsoleKey.D2 && choice != ConsoleKey.D3);
 
+ feature/testing
         multiplayer = (choice == ConsoleKey.D2);
         if (choice == ConsoleKey.D3) Environment.Exit(0);
+
+        if (choice == ConsoleKey.D1)
+            multiplayer = false;
+        else if (choice == ConsoleKey.D2)
+            multiplayer = true;
+        else
+            Environment.Exit(0);
+ main
     }
 
     static void StartGame()
@@ -89,7 +98,15 @@ class Program
         while (gameRunning)
         {
             Update();
+ feature/speedup
             Thread.Sleep(speed); // ← teraz zależne od prędkości
+
+ feature/testing
+            Thread.Sleep(multiplayer ? 120 : 100);
+
+            Thread.Sleep(100);
+ main
+ main
         }
 
         inputThread.Join();
@@ -150,6 +167,7 @@ class Program
 
     static void SpawnFood()
     {
+ feature/testing
         do
         {
             foodX = rand.Next(1, width - 1);
@@ -158,6 +176,10 @@ class Program
         while ((foodX == snake1X && foodY == snake1Y) ||
                (multiplayer && foodX == snake2X && foodY == snake2Y));
 
+
+        foodX = rand.Next(1, width - 1);
+        foodY = rand.Next(1, height - 1);
+ main
         DrawFood();
     }
 
@@ -215,12 +237,28 @@ class Program
             case ConsoleKey.RightArrow: snake1X++; break;
         }
 
+ feature/speedup
+
+ feature/testing
+        // Kolizja gracza 1 ze ścianą
+
+        // Kolizja gracza 1
+ main
+ main
         if (snake1X <= 0 || snake1X >= width - 1 || snake1Y <= 0 || snake1Y >= height - 1)
         {
             gameRunning = false;
             return;
         }
 
+ feature/speedup
+
+ feature/testing
+        // Ruch i kolizja gracza 2
+
+        // Gracz 2 (jeśli aktywny)
+ main
+ main
         if (multiplayer)
         {
             switch (currentDirection2)
@@ -236,12 +274,15 @@ class Program
                 gameRunning = false;
                 return;
             }
+ feature/testing
 
             if (snake1X == snake2X && snake1Y == snake2Y)
             {
                 gameRunning = false;
                 return;
             }
+
+ main
         }
 
         if (snake1X == foodX && snake1Y == foodY)
